@@ -9,7 +9,7 @@ I used MongoDB collection ledger_events for account_opened and ledger_entry_reco
 | _id | Unique string event ID |
 | eventType | One of the two selected case event labels |
 | occurredAt | Native BSON Date; sample timestamps are in 2030 |
-| source | Original entity, primary key and saved JSON snapshot |
+| source | Original entity, source key and saved JSON snapshot |
 | embedded | Linked record snapshots read with the event |
 | references | Keys for linked sources kept outside the embedded snapshots |
 | details | Event metadata whose fields vary |
@@ -88,7 +88,7 @@ Related account, customer details are stored as snapshots with the event. This m
 | Query | Returned documents |
 | --- | --- |
 | Find the first sample event type (up to five documents). | 2 |
-| Find events for the first source record using nested key fields (up to five). | 2 |
+| Find events associated with account 4 (up to five). | 2 |
 | Find events in the sample time range using a MongoDB Date filter (up to five). | 4 |
 | Count documents for each event type. | 2 |
 
@@ -125,10 +125,10 @@ Selected fields from the returned documents:
 ]
 ```
 
-## 2. Find events for the first source record using nested key fields (up to five).
+## 2. Find events associated with account 4 (up to five).
 
 ```javascript
-db.getCollection("ledger_events").find({"source.key.entry_id":6}).sort({_id:1}).limit(5).toArray();
+db.getCollection("ledger_events").find({"$or":[{"source.key.account_id":4},{"source.snapshot.account_id":4}]}).sort({_id:1}).limit(5).toArray();
 ```
 
 Selected fields from the returned documents:

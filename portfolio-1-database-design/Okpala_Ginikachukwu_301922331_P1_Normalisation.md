@@ -1,67 +1,52 @@
-# Bank/FinTech Platform — normalisation
+# Bank/FinTech Platform — normalisation to 3NF
 
-The example uses the saved sample records. The full set of fields is in the design and schema.
+## Starting point: unnormalised activity view
 
-## Starting grouped records
+A first spreadsheet-style view might place customer, account and transaction details in one record and store several ledger postings in a repeating list. Repeating groups make searching, updating and validating individual postings difficult.
 
-| account_id | ledger_entry records (list) |
-| --- | --- |
-| 4 | [6] |
-| 5 | [7] |
+| account_number | customer_name | ledger_entries |
+| --- | --- | --- |
+| ACCT-1001 | Avery Chen | [credit 20.50; debit 5.00] |
+| ACCT-1002 | Morgan Patel | [credit 10.00] |
 
+This is an illustrative unnormalised representation, not the implemented database structure.
 
-The record IDs are grouped in a list. In 1NF, each record has its own row and each cell holds one value.
+## 1NF — atomic values
 
-## 1NF: one value per cell
+Remove the repeating ledger-entry list so every posting occupies its own row and every cell contains one value.
 
-| ledger_entry.entry_id | ledger_entry.account_id | ledger_entry.entry_type | account.account_id | account.customer_id | account.account_number | customer.customer_id | customer.full_name |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 6 | 4 | credit | 4 | 1 | ACCT-1001 | 1 | Avery Chen |
-| 7 | 5 | debit | 5 | 2 | ACCT-1002 | 2 | Morgan Patel |
+| entry_id | account_number | customer_name | entry_type | amount |
+| ---: | --- | --- | --- | ---: |
+| 6 | ACCT-1001 | Avery Chen | credit | 20.50 |
+| 8 | ACCT-1001 | Avery Chen | debit | 5.00 |
+| 7 | ACCT-1002 | Morgan Patel | credit | 10.00 |
 
-Key: entry_id.
+The illustrative relation has entry_id as its single-attribute key. All values are atomic, so it satisfies the 1NF requirement.
 
-## 2NF: depend on the whole key
+## 2NF — remove partial dependencies
 
-The declared candidate keys do not introduce a partial dependency here, so the 1NF rows stay unchanged at this step.
+A relation is in 2NF when it is in 1NF and every non-key attribute depends on the whole candidate key. Because entry_id is a single-attribute key, a partial dependency on only part of that key cannot occur. The illustrative relation therefore satisfies 2NF, although customer and account details still repeat across ledger rows.
 
-## ledger_entry_example
+## 3NF — remove transitive dependencies
 
-| ledger_entry.entry_id | ledger_entry.account_id | ledger_entry.entry_type | account.account_id | account.customer_id | account.account_number | customer.customer_id | customer.full_name |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 6 | 4 | credit | 4 | 1 | ACCT-1001 | 1 | Avery Chen |
-| 7 | 5 | debit | 5 | 2 | ACCT-1002 | 2 | Morgan Patel |
+The flattened activity relation contains dependencies such as:
 
-## 3NF: store each entity’s details once
+- entry_id → account_id, entry_type, amount, occurred_at, transfer_id
+- account_id → customer_id, account_number, opened_on, balance, status, is_primary
+- customer_id → full_name, email, created_on
+- transfer_id → source_account_id, destination_account_id, amount, transfer_reference, created_at
 
-The entity keys determine their own descriptions. Related records keep foreign keys rather than repeating those descriptions.
+For example, entry_id determines account_id, and account_id determines customer_id. Therefore customer details depend on entry_id through account_id and customer_id. Keeping all these attributes in one table creates transitive dependencies and update anomalies.
 
-## customer
+The design decomposes the relation into:
 
-| customer_id | full_name | email | created_on |
-| --- | --- | --- | --- |
-| 1 | Avery Chen | avery.chen@example.test | 2025-01-10 |
-| 2 | Morgan Patel | morgan.patel@example.test | 2025-02-14 |
-| 3 | Jordan Lee | jordan.lee@example.test | 2025-03-01 |
+- customer(customer_id, full_name, email, created_on)
+- account(account_id, customer_id, account_number, opened_on, balance, status, is_primary)
+- transfer(transfer_id, source_account_id, destination_account_id, amount, transfer_reference, created_at)
+- ledger_entry(entry_id, account_id, amount, entry_type, occurred_at, reference, transfer_id)
 
-## account
+Each non-key attribute in these relations depends on its table's key, the whole key, and nothing but the key, subject to the stated business rules. Foreign keys preserve the relationships and allow the original activity view to be reconstructed with joins.
 
-| account_id | customer_id | account_number | opened_on | balance | status | is_primary |
-| --- | --- | --- | --- | --- | --- | --- |
-| 4 | 1 | ACCT-1001 | 2025-01-12 | 120.5 | active | true |
-| 5 | 2 | ACCT-1002 | 2025-02-16 | 80 | active | true |
+## Result
 
-## ledger_entry
-
-| entry_id | account_id | amount | entry_type | occurred_at | reference |
-| --- | --- | --- | --- | --- | --- |
-| 6 | 4 | 20.5 | credit | 2025-01-13T10:15:00+00:00 | REF-1001 |
-| 7 | 5 | 10 | debit | 2025-02-17T14:30:00+00:00 | NULL |
-
-## Dependencies
-
-- customer: (customer_id) → full_name, email, created_on
-- account: (account_id) → customer_id, account_number, opened_on, balance, status, is_primary
-- ledger_entry: (entry_id) → account_id, amount, entry_type, occurred_at, reference
-
-Joining the decomposed sample tables reproduces the original 2 example rows. The design assumes the declared keys describe the relevant business dependencies.
+The decomposition reduces repeated customer and account details, supports independent account and customer updates, and keeps a transfer's two ledger postings linked through transfer_id. The ER diagram and P1 schema implement this decomposition.

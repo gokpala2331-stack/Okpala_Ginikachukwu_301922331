@@ -5,7 +5,7 @@
 INSERT INTO portfolio."customer" ("customer_id", "full_name", "email", "created_on")
 VALUES (1, 'Riley Stone', 'riley.pk@example.test', '2025-03-02');
 
--- 2. customer unique. Expected: uq_customer_0, SQLSTATE 23505.
+-- 2. customer unique. Expected: uq_customer_email, SQLSTATE 23505.
 INSERT INTO portfolio."customer" ("customer_id", "full_name", "email", "created_on")
 VALUES (101, 'Riley Stone', 'avery.chen@example.test', '2025-03-03');
 
@@ -29,11 +29,11 @@ VALUES (104, 'Riley Stone', 'riley.date@example.test', NULL);
 INSERT INTO portfolio."account" ("account_id", "customer_id", "account_number", "opened_on", "balance", "status", "is_primary")
 VALUES (4, 3, 'ACCT-2001', '2025-03-02', 10, 'active', FALSE);
 
--- 8. account unique. Expected: uq_account_0, SQLSTATE 23505.
+-- 8. account unique. Expected: uq_account_number, SQLSTATE 23505.
 INSERT INTO portfolio."account" ("account_id", "customer_id", "account_number", "opened_on", "balance", "status", "is_primary")
 VALUES (105, 3, 'ACCT-1001', '2025-03-03', 10, 'active', FALSE);
 
--- 9. account fk. Expected: fk_account_0, SQLSTATE 23503.
+-- 9. account fk. Expected: fk_account_customer, SQLSTATE 23503.
 INSERT INTO portfolio."account" ("account_id", "customer_id", "account_number", "opened_on", "balance", "status", "is_primary")
 VALUES (106, 90001, 'ACCT-2002', '2025-03-04', 10, 'active', FALSE);
 
@@ -77,7 +77,7 @@ VALUES (114, 1, 'ACCT-2010', '2025-03-12', 10, 'active', TRUE);
 INSERT INTO portfolio."ledger_entry" ("entry_id", "account_id", "amount", "entry_type", "occurred_at", "reference")
 VALUES (6, 5, 1, 'credit', '2025-03-02T10:00:00Z', 'REF-2001');
 
--- 20. ledger fk. Expected: fk_ledger_entry_0, SQLSTATE 23503.
+-- 20. ledger fk. Expected: fk_ledger_entry_account, SQLSTATE 23503.
 INSERT INTO portfolio."ledger_entry" ("entry_id", "account_id", "amount", "entry_type", "occurred_at", "reference")
 VALUES (115, 90002, 1, 'credit', '2025-03-03T10:00:00Z', 'REF-2002');
 

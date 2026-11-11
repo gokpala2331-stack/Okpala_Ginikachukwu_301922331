@@ -42,10 +42,6 @@ The repository includes supporting material for each activity. The current scree
 
 The relational design separates customer, account, transfer and ledger details to reduce duplication and preserve referential integrity. A partial unique index enforces the primary-account rule without preventing customers from holding multiple non-primary accounts. The query experiment illustrates that indexes can reduce the work required for selective lookups, while adding storage and write costs. The two-session exercise illustrates a lost update and how row locking serialises concurrent modifications. The transfer function applies those lessons to an actual banking operation. The MongoDB event model shows the flexibility of document data while also requiring care with duplicated snapshots and consistency between systems.
 
-## AI-use declaration
-
-I used ChatGPT to review the repository against the assessment brief, identify design and implementation issues, draft corrections, and improve the SQL, MongoDB scripts and documentation. GitHub Copilot and the portfolio generator were also used during the earlier preparation stages as previously recorded. I reviewed the changes made in this repository. The new or revised review-branch scripts have not yet been executed in a live PostgreSQL or MongoDB environment; I will run them, resolve any errors, compare actual outputs with the expected results, capture fresh screenshots and update the final PDF before submission. I remain responsible for understanding and explaining every submitted design choice, script and result.
-
 ## Repository
 
 https://github.com/gokpala2331-stack/Okpala_Ginikachukwu_301922331

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">Bank and FinTech Platform entity relationship diagram</title>
+<desc id="desc">Four entities: customer, account, transfer and ledger entry. Customer owns accounts. Accounts act as source and destination for transfers and have ledger entries. A transfer generates ledger entries.</desc>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+  <style>
+    .bg{fill:#f8fafc}.card{fill:#fff;stroke:#94a3b8;stroke-width:2;rx:16}
+    .head{fill:#e2e8f0}.name{font:700 22px Arial,sans-serif;fill:#0f172a}
+    .field{font:16px Arial,sans-serif;fill:#334155}.key{font-weight:700;fill:#0f172a}
+    .line{stroke:#64748b;stroke-width:2.4;fill:none;marker-end:url(#arrow)}
+    .label{font:14px Arial,sans-serif;fill:#475569}.title{font:700 30px Arial,sans-serif;fill:#0f172a}
+    .sub{font:16px Arial,sans-serif;fill:#475569}
+  </style>
+</defs>
+<rect class="bg" width="1200" height="760"/>
+<text class="title" x="50" y="52">Bank/FinTech Platform — Entity Relationship Diagram</text>
+<text class="sub" x="50" y="80">PK = primary key · FK = foreign key · UK = unique key</text>
+
+<!-- Relationship connectors behind entities -->
+<path class="line" d="M280 225 L365 225"/>
+<text class="label" x="300" y="208">owns (1 : many)</text>
+<path class="line" d="M650 188 C710 188 720 188 780 188"/>
+<text class="label" x="670" y="169">source account</text>
+<path class="line" d="M650 265 C710 265 720 265 780 265"/>
+<text class="label" x="673" y="290">destination account</text>
+<path class="line" d="M500 390 L500 480"/>
+<text class="label" x="515" y="438">has entries</text>
+<path class="line" d="M930 365 C930 435 800 435 800 535"/>
+<text class="label" x="845" y="422">posts entries</text>
+
+<!-- customer -->
+<rect class="card" x="50" y="145" width="230" height="225"/>
+<path class="head" d="M66 145 H264 Q280 145 280 161 V190 H50 V161 Q50 145 66 145Z"/>
+<text class="name" x="70" y="176">customer</text>
+<text class="field" x="70" y="222"><tspan class="key">PK</tspan>  customer_id BIGINT</text>
+<text class="field" x="70" y="255">full_name TEXT</text>
+<text class="field" x="70" y="288"><tspan class="key">UK</tspan>  email TEXT</text>
+<text class="field" x="70" y="321">created_on DATE</text>
+
+<!-- account -->
+<rect class="card" x="365" y="115" width="285" height="275"/>
+<path class="head" d="M381 115 H634 Q650 115 650 131 V160 H365 V131 Q365 115 381 115Z"/>
+<text class="name" x="385" y="146">account</text>
+<text class="field" x="385" y="190"><tspan class="key">PK</tspan>  account_id BIGINT</text>
+<text class="field" x="385" y="223"><tspan class="key">FK</tspan>  customer_id BIGINT</text>
+<text class="field" x="385" y="256"><tspan class="key">UK</tspan>  account_number TEXT</text>
+<text class="field" x="385" y="289">opened_on DATE</text>
+<text class="field" x="385" y="322">balance NUMERIC(18,2)</text>
+<text class="field" x="385" y="355">status, is_primary</text>
+
+<!-- transfer -->
+<rect class="card" x="780" y="115" width="365" height="275"/>
+<path class="head" d="M796 115 H1129 Q1145 115 1145 131 V160 H780 V131 Q780 115 796 115Z"/>
+<text class="name" x="800" y="146">transfer</text>
+<text class="field" x="800" y="190"><tspan class="key">PK</tspan>  transfer_id BIGINT</text>
+<text class="field" x="800" y="223"><tspan class="key">FK</tspan>  source_account_id BIGINT</text>
+<text class="field" x="800" y="256"><tspan class="key">FK</tspan>  destination_account_id BIGINT</text>
+<text class="field" x="800" y="289">amount NUMERIC(18,2)</text>
+<text class="field" x="800" y="322"><tspan class="key">UK</tspan>  transfer_reference TEXT</text>
+<text class="field" x="800" y="355">created_at TIMESTAMPTZ</text>
+
+<!-- ledger_entry -->
+<rect class="card" x="365" y="480" width="435" height="220"/>
+<path class="head" d="M381 480 H784 Q800 480 800 496 V525 H365 V496 Q365 480 381 480Z"/>
+<text class="name" x="385" y="511">ledger_entry</text>
+<text class="field" x="385" y="555"><tspan class="key">PK</tspan>  entry_id BIGINT</text>
+<text class="field" x="385" y="588"><tspan class="key">FK</tspan>  account_id BIGINT</text>
+<text class="field" x="385" y="621">amount, entry_type, occurred_at</text>
+<text class="field" x="385" y="654"><tspan class="key">FK</tspan>  transfer_id BIGINT (nullable)</text>
+<text class="label" x="50" y="730">Each successful transfer records a source debit and destination credit in the same database transaction.</text>
+</svg>

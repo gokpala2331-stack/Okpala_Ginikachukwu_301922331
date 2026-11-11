@@ -1,77 +1,94 @@
 # Bank/FinTech Platform — database design
 
-My case study records customer, account, ledger_entry.
+## Case study and users
 
-## Users
-
-- Customers reviewing account activity
-- Operations staff reconciling ledger entries
-- Analysts summarizing account activity
+The selected case study is a simulated Bank/FinTech Platform. It supports customer account servicing and transaction processing. The database is used by customers viewing their accounts and activity, operations staff reconciling transactions, and analysts preparing account and transaction summaries. All records in this portfolio are synthetic.
 
 ## Main operations
 
-- Open an account for a customer
-- Record a debit or credit while maintaining the account balance
-- Review and summarize ledger activity
+- Register a customer and open one or more accounts.
+- Maintain account balances and account status.
+- Transfer funds between two accounts atomically.
+- Record debit and credit ledger entries for each successful transfer.
+- Review and summarise account and ledger activity.
 
-## Entities
+## Entities and purpose
 
 | Entity | Information stored |
 | --- | --- |
-| customer | A person who holds one or more platform accounts. |
-| account | An account owned by a customer, with a maintained nonnegative balance. |
-| ledger_entry | A debit or credit recorded against one account. |
+| customer | Customer identity and contact information. |
+| account | Account number, owner, opening date, balance, status and primary-account flag. |
+| transfer | A successful movement from one account to another, with amount, unique reference and timestamp. |
+| ledger_entry | The debit or credit posting associated with an account and, where applicable, a transfer. |
 
-## customer
+## Relational schema
 
-| Field | Type | Key | Required |
-| --- | --- | --- | --- |
-| customer_id | BIGINT | PK | Yes |
-| full_name | TEXT |  | Yes |
-| email | TEXT | Unique | Yes |
-| created_on | DATE |  | Yes |
-- Unique key: (email).
+### customer
 
-## account
+| Attribute | Type | Key / rule |
+| --- | --- | --- |
+| customer_id | BIGINT | Primary key |
+| full_name | TEXT | NOT NULL |
+| email | TEXT | NOT NULL, UNIQUE |
+| created_on | DATE | NOT NULL |
 
-| Field | Type | Key | Required |
-| --- | --- | --- | --- |
-| account_id | BIGINT | PK | Yes |
-| customer_id | BIGINT | FK | Yes |
-| account_number | TEXT | Unique | Yes |
-| opened_on | DATE |  | Yes |
-| balance | NUMERIC(18,2) |  | Yes |
-| status | TEXT |  | Yes |
-| is_primary | BOOLEAN |  | Yes |
-- customer_id → customer.customer_id
-- Unique key: (account_number).
+### account
 
-## ledger_entry
+| Attribute | Type | Key / rule |
+| --- | --- | --- |
+| account_id | BIGINT | Primary key |
+| customer_id | BIGINT | Foreign key to customer |
+| account_number | TEXT | NOT NULL, UNIQUE |
+| opened_on | DATE | NOT NULL |
+| balance | NUMERIC(18,2) | NOT NULL, CHECK balance >= 0 |
+| status | TEXT | active, dormant, frozen or closed |
+| is_primary | BOOLEAN | NOT NULL, defaults to FALSE |
 
-| Field | Type | Key | Required |
-| --- | --- | --- | --- |
-| entry_id | BIGINT | PK | Yes |
-| account_id | BIGINT | FK | Yes |
-| amount | NUMERIC(18,2) |  | Yes |
-| entry_type | TEXT |  | Yes |
-| occurred_at | TIMESTAMPTZ |  | Yes |
-| reference | TEXT |  | No |
-- account_id → account.account_id
+A customer may own multiple accounts. A partial unique index applies only where is_primary = TRUE, which permits multiple non-primary accounts but no more than one primary account for the same customer.
 
-## Relationships and business rules
+### transfer
 
-- Each customer email identifies at most one customer.
-- Every account references an existing customer through customer_id.
-- An account balance must be at least zero; a debit that would violate this rule is rejected.
-- At most one account per customer may have is_primary set to true, enforced with a partial unique constraint on customer_id for primary accounts.
-- Every ledger entry references an existing account through account_id.
-- Every ledger entry amount must be greater than zero.
+| Attribute | Type | Key / rule |
+| --- | --- | --- |
+| transfer_id | BIGINT | Identity primary key |
+| source_account_id | BIGINT | Foreign key to account |
+| destination_account_id | BIGINT | Foreign key to account |
+| amount | NUMERIC(18,2) | CHECK amount > 0 |
+| transfer_reference | TEXT | NOT NULL, UNIQUE |
+| created_at | TIMESTAMPTZ | NOT NULL, defaults to current timestamp |
+
+A transfer must have different source and destination accounts. A transfer row represents a successful transfer that is committed together with its two ledger entries and balance updates.
+
+### ledger_entry
+
+| Attribute | Type | Key / rule |
+| --- | --- | --- |
+| entry_id | BIGINT | Identity primary key |
+| account_id | BIGINT | Foreign key to account |
+| amount | NUMERIC(18,2) | CHECK amount > 0 |
+| entry_type | TEXT | debit or credit |
+| occurred_at | TIMESTAMPTZ | NOT NULL |
+| reference | TEXT | Optional transfer reference |
+| transfer_id | BIGINT | Nullable foreign key to transfer |
+
+Each completed transfer creates a debit ledger entry for the source account and a credit ledger entry for the destination account. The two entries share the same transfer_id.
+
+## Relationships
+
+- One customer can own many accounts; each account belongs to one customer.
+- One account can have many ledger entries; each ledger entry belongs to one account.
+- One transfer identifies one source account and one destination account.
+- One transfer can be linked to its two corresponding ledger entries.
+
+## Integrity and implementation rules
+
+Primary keys uniquely identify rows. Foreign keys prevent accounts, transfers and ledger entries from referring to missing parent records. CHECK constraints restrict balances, amounts, account statuses and ledger entry types. Unique constraints protect customer email, account number and transfer reference.
+
+The transfer routine in Portfolio 3 obtains row locks in account-ID order, checks the sender's balance, updates both balances, writes the transfer row and inserts both ledger entries within one database transaction. If an operation fails, PostgreSQL rolls back the entire statement/transaction so a partial transfer is not committed.
 
 ## Assumptions
 
-- All amounts use one fictional currency, and each ledger entry affects exactly one account.
-- Account balance is maintained atomically with each ledger entry; opening balance is nonnegative.
-- Customer email and account number are unique within this synthetic dataset.
-- For a normalization exercise, customer_id determines customer details; keep those details in customer and store only customer_id as the account foreign key.
-- Student names and IDs are omitted; all example data, if added, must be synthetic.
-
+- The portfolio uses fictional records and one illustrative currency (NGN).
+- Account balances are stored to two decimal places.
+- A transfer is successful only when both account updates and both ledger postings commit.
+- Deposits, withdrawals, fees, multi-currency conversion and external payment rails are outside this small case-study scope.

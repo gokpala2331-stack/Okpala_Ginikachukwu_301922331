@@ -65,8 +65,12 @@
                         "bsonType": "object",
                         "properties": {
                             "account_id": { "bsonType": ["int", "long", "double"] },
-                            "entry_id": { "bsonType": ["int", "long"] }
-                        }
+                            "entry_id": { "bsonType": ["int", "long", "double"] }
+                        },
+                        "oneOf": [
+                            { "required": ["account_id"] },
+                            { "required": ["entry_id"] }
+                        ]
                     },
                     "snapshot": {
                         "bsonType": "object"
@@ -369,7 +373,7 @@
   printjson(await db.getCollection("ledger_events").find({"eventType":"account_opened"}).sort({_id:1}).limit(5).toArray());
 
   // 2. Find events associated with account 4, including its ledger entries.
-  printjson(await db.getCollection("ledger_events").find({"source.key.entry_id":6}).sort({_id:1}).limit(5).toArray());
+  printjson(await db.getCollection("ledger_events").find({"$or":[{"source.key.account_id":4},{"source.snapshot.account_id":4}]}).sort({_id:1}).limit(5).toArray());
 
   // 3. Find events in the sample time range using a MongoDB Date filter (up to five).
   printjson(await db.getCollection("ledger_events").find({"occurredAt":{"$gte":ISODate("2030-01-01T10:00:00Z"), "$lt":ISODate("2030-01-01T11:00:00Z")}}).sort({_id:1}).limit(5).toArray());

@@ -6,7 +6,7 @@ The portfolio demonstrates BEGIN, COMMIT and ROLLBACK, plus READ COMMITTED isola
 
 ## Banking transfer implementation
 
-The additional script `Okpala_Ginikachukwu_301922331_P3_BankingTransfer.sql` creates the PostgreSQL function `portfolio.transfer_funds`. It performs a real account-to-account transfer against the case-study tables.
+The additional script `Okpala_Ginikachukwu_301922331_P3_BankingTransfer.sql` creates the PostgreSQL function `portfolio.transfer_funds`. It performs a real account-to-account transfer against the case-study tables and rejects frozen, dormant or closed accounts.
 
 The function:
 

@@ -57,14 +57,16 @@
                 "properties": {
                     "entity": {
                         "enum": [
+                            "account",
                             "ledger_entry"
                         ]
                     },
                     "key": {
                         "bsonType": "object",
-                        "required": [
-                            "entry_id"
-                        ]
+                        "properties": {
+                            "account_id": { "bsonType": ["int", "long"] },
+                            "entry_id": { "bsonType": ["int", "long"] }
+                        }
                     },
                     "snapshot": {
                         "bsonType": "object"
@@ -370,19 +372,18 @@
     "eventType": "account_opened",
     "occurredAt": ISODate("2030-01-01T10:00:00Z"),
     "source": {
-        "entity": "ledger_entry",
-        "key": {
-            "entry_id": 6
+            "entity": "account",
+            "key": { "account_id": 4 },
+            "snapshot": {
+                "account_id": 4,
+                "customer_id": 1,
+                "account_number": "ACCT-1001",
+                "opened_on": "2025-01-12",
+                "balance": 120.5,
+                "status": "active",
+                "is_primary": true
+            }
         },
-        "snapshot": {
-            "entry_id": 6,
-            "account_id": 4,
-            "amount": 20.5,
-            "entry_type": "credit",
-            "occurred_at": "2025-01-13T10:15:00Z",
-            "reference": "REF-1001"
-        }
-    },
     "embedded": {
         "account": [
             {
@@ -435,19 +436,18 @@
     "eventType": "account_opened",
     "occurredAt": ISODate("2030-01-01T10:00:00Z"),
     "source": {
-        "entity": "ledger_entry",
-        "key": {
-            "entry_id": 6
+            "entity": "account",
+            "key": { "account_id": 4 },
+            "snapshot": {
+                "account_id": 4,
+                "customer_id": 1,
+                "account_number": "ACCT-1001",
+                "opened_on": "2025-01-12",
+                "balance": 120.5,
+                "status": "active",
+                "is_primary": true
+            }
         },
-        "snapshot": {
-            "entry_id": 6,
-            "account_id": 4,
-            "amount": 20.5,
-            "entry_type": "credit",
-            "occurred_at": "2025-01-13T10:15:00Z",
-            "reference": "REF-1001"
-        }
-    },
     "embedded": {
         "account": [
             {

@@ -2,74 +2,46 @@
 
 ## Transaction controls
 
-The portfolio demonstrates BEGIN, COMMIT and ROLLBACK, plus READ COMMITTED isolation. The counter exercise is retained as a focused lost-update example. It uses a temporary helper column and is not presented as a banking ledger operation.
+The portfolio demonstrates BEGIN, COMMIT and ROLLBACK, READ COMMITTED isolation, a lost-update scenario and SELECT FOR UPDATE across two sessions. The original counter exercise is retained as a focused example of concurrency anomalies; it is not represented as a banking ledger operation.
 
 ## Banking transfer implementation
 
-The additional script `Okpala_Ginikachukwu_301922331_P3_BankingTransfer.sql` creates the PostgreSQL function `portfolio.transfer_funds`. It performs a real account-to-account transfer against the case-study tables and rejects frozen, dormant or closed accounts.
+The additional script `Okpala_Ginikachukwu_301922331_P3_BankingTransfer.sql` creates the PostgreSQL function `portfolio.transfer_funds`. It performs a transfer between two accounts in the case-study database.
 
 The function:
 
-1. Rejects a non-positive amount, a missing account, the same source and destination, and an insufficient balance.
+1. Rejects non-positive amounts, identical source and destination accounts, missing accounts and non-active accounts.
 2. Locks both account rows in ascending account-ID order to reduce deadlock risk.
-3. Inserts a uniquely referenced transfer record.
-4. Debits the source account and credits the destination account.
-5. Inserts a debit and a credit ledger entry linked to the transfer.
-6. Returns the transfer ID. Any error aborts the call/transaction; the caller rolls back to ensure no partial transfer is committed.
+3. Checks that the source account has sufficient funds.
+4. Inserts a unique transfer record.
+5. Debits the source and credits the destination.
+6. Inserts matching debit and credit ledger entries linked to the transfer ID.
 
-### Run the successful transfer
+All changes are made within the same database transaction. If an operation fails, the statement is aborted; when using an explicit transaction, the caller must issue ROLLBACK.
 
-1. Create a fresh PostgreSQL database.
-2. Run the Portfolio 1 schema and sample-data scripts.
-3. Run `Okpala_Ginikachukwu_301922331_P3_BankingTransfer.sql` to create the function.
-4. Execute the following once:
+## Repeatable transfer test
 
-```sql
-BEGIN;
-SELECT portfolio.transfer_funds(4, 5, 20.00, 'DEMO-TRF-0001');
-COMMIT;
-```
+Run the P1 schema and sample-data scripts, then run the transfer function script. Next run `Okpala_Ginikachukwu_301922331_P3_BankingTransferTest.sql`. It executes a 20.00 test transfer, checks the balances and paired ledger postings, attempts an insufficient-funds transfer, checks that the failed attempt left no partial records or balance changes, and finally rolls the entire test transaction back.
 
-The sample starts with account 4 at 120.50 and account 5 at 80.00. After a successful 20.00 transfer, the expected balances are 100.50 and 100.00. Verify them with:
+The expected post-transfer balances during the test are:
+- Account 4: 100.50 (starting balance 120.50 less 20.00).
+- Account 5: 100.00 (starting balance 80.00 plus 20.00).
 
-```sql
-SELECT account_id, account_number, balance
-FROM portfolio.account
-WHERE account_id IN (4, 5)
-ORDER BY account_id;
-
-SELECT transfer_id, account_id, entry_type, amount, reference
-FROM portfolio.ledger_entry
-WHERE reference = 'DEMO-TRF-0001'
-ORDER BY entry_id;
-```
-
-These are expected values derived from the sample data. Capture the actual output from your own PostgreSQL run before submitting it as execution evidence.
-
-### Test rollback
-
-Run an insufficient-funds transfer in a separate transaction:
-
-```sql
-BEGIN;
-SELECT portfolio.transfer_funds(4, 5, 999999.00, 'DEMO-TRF-FAIL-0001');
-ROLLBACK;
-```
-
-The function should raise an insufficient-funds error. After rollback, verify that the failed reference does not exist in transfer or ledger_entry and that both balances are unchanged.
+These are expected values calculated from the sample data. Capture the actual terminal output from your PostgreSQL environment before using it as assessment evidence.
 
 ## Two-session concurrency test
 
-Open two psql sessions connected to the same database. Follow the numbered steps in SessionA.sql and SessionB.sql. The unlocked example shows a lost update; the SELECT FOR UPDATE example serialises access to the counter row. The new transfer function also locks both account rows in a consistent order before checking and changing balances.
+Open two psql sessions connected to the same database. Follow the numbered steps in SessionA.sql and SessionB.sql. The unlocked example demonstrates a lost update. The SELECT FOR UPDATE example serialises access to the shared counter row. The banking transfer routine also locks both account rows in a consistent order before validating and changing balances.
 
-## Evidence to capture
+## Files
 
-- Successful transfer result and both updated balances.
-- The two ledger postings showing debit and credit with the same transfer_id.
-- Insufficient-funds error followed by verification that no partial posting remains.
-- Two-session lost-update and row-locking output.
-
-Do not use expected values in this README as a substitute for screenshots or output captured from an actual run.
+- [Banking transfer function](Okpala_Ginikachukwu_301922331_P3_BankingTransfer.sql)
+- [Repeatable transfer test](Okpala_Ginikachukwu_301922331_P3_BankingTransferTest.sql)
+- [Transaction controls](Okpala_Ginikachukwu_301922331_P3_Transactions.sql)
+- [Session A](Okpala_Ginikachukwu_301922331_P3_SessionA.sql)
+- [Session B](Okpala_Ginikachukwu_301922331_P3_SessionB.sql)
+- [Commit and rollback screenshot](screenshots/Okpala_Ginikachukwu_301922331_P3_CommitRollback.png)
+- [Concurrency screenshot](screenshots/Okpala_Ginikachukwu_301922331_P3_ConcurrencyResult.png)
 
 ## References
 

@@ -6,7 +6,7 @@
 
 The selected case study is a simulated Bank/FinTech Platform. Customers review account activity, operations staff reconcile ledger entries, and analysts summarise account activity. The relational model stores customers, accounts, transfers and debit/credit ledger entries. It supports account opening, atomic transfers, balance checks and transaction reporting. All records are fictional.
 
-## Portfolio 1: Database Design and Modelling
+![Updated relational ER diagram](images/Okpala_Ginikachukwu_301922331_ERDiagram.svg)\n\n## Portfolio 1: Database Design and Modelling
 
 The relational design contains customer, account, transfer and ledger_entry tables. It includes an ER diagram, relational schema, primary and foreign keys, unique constraints, CHECK constraints and a partial unique index that allows multiple accounts per customer while limiting each customer to one primary account. The normalisation explanation covers 1NF, 2NF and 3NF. The constraint test scripts include negative tests and a positive multiple-account test.
 

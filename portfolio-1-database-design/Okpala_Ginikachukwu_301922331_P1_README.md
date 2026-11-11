@@ -7,7 +7,8 @@ The Bank/FinTech Platform is modelled using four related tables: customer, accou
 The schema defines primary keys, foreign keys, unique constraints, CHECK constraints and a partial unique index that permits multiple non-primary accounts while limiting each customer to one primary account.
 
 - [Design and case study](Okpala_Ginikachukwu_301922331_P1_Design.md)
-- [ER diagram (Mermaid)](Okpala_Ginikachukwu_301922331_P1_ERDiagram.md)\n- [ER diagram (SVG)](../images/Okpala_Ginikachukwu_301922331_ERDiagram.svg)
+- [ER diagram (Mermaid)](Okpala_Ginikachukwu_301922331_P1_ERDiagram.md)
+- [ER diagram (SVG)](../images/Okpala_Ginikachukwu_301922331_ERDiagram.svg)
 - [Normalisation](Okpala_Ginikachukwu_301922331_P1_Normalisation.md)
 - [Schema](Okpala_Ginikachukwu_301922331_P1_Schema.sql)
 - [Sample data](Okpala_Ginikachukwu_301922331_P1_SampleData.sql)

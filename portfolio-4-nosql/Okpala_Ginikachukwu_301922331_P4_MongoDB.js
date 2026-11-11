@@ -64,7 +64,7 @@
                     "key": {
                         "bsonType": "object",
                         "properties": {
-                            "account_id": { "bsonType": ["int", "long"] },
+                            "account_id": { "bsonType": ["int", "long", "double"] },
                             "entry_id": { "bsonType": ["int", "long"] }
                         }
                     },
@@ -82,7 +82,21 @@
             "details": {
                 "bsonType": "object"
             }
-        }
+        },
+        "oneOf": [
+            {
+                "properties": {
+                    "eventType": { "enum": ["account_opened"] },
+                    "source": { "properties": { "entity": { "enum": ["account"] } } }
+                }
+            },
+            {
+                "properties": {
+                    "eventType": { "enum": ["ledger_entry_recorded"] },
+                    "source": { "properties": { "entity": { "enum": ["ledger_entry"] } } }
+                }
+            }
+        ]
     }
 },
     validationLevel: 'strict', validationAction: 'error'
@@ -354,7 +368,7 @@
   // 1. Find the first sample event type (up to five documents).
   printjson(await db.getCollection("ledger_events").find({"eventType":"account_opened"}).sort({_id:1}).limit(5).toArray());
 
-  // 2. Find events for the first source record using nested key fields (up to five).
+  // 2. Find events associated with account 4, including its ledger entries.
   printjson(await db.getCollection("ledger_events").find({"source.key.entry_id":6}).sort({_id:1}).limit(5).toArray());
 
   // 3. Find events in the sample time range using a MongoDB Date filter (up to five).

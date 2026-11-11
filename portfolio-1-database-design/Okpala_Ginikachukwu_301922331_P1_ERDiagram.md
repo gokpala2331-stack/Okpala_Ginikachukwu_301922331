@@ -18,18 +18,28 @@ erDiagram
         text status
         boolean is_primary
     }
+    transfer {
+        bigint transfer_id PK
+        bigint source_account_id FK
+        bigint destination_account_id FK
+        numeric amount
+        text transfer_reference UK
+        timestamptz created_at
+    }
     ledger_entry {
         bigint entry_id PK
         bigint account_id FK
         numeric amount
         text entry_type
         timestamptz occurred_at
-        text reference "Optional"
+        text reference
+        bigint transfer_id FK
     }
-    customer ||--o{ account : "customer_id"
-    account ||--o{ ledger_entry : "account_id"
+    customer ||--o{ account : owns
+    account ||--o{ ledger_entry : records
+    account ||--o{ transfer : source
+    account ||--o{ transfer : destination
+    transfer ||--o{ ledger_entry : posts
 ```
 
-PK identifies a record; FK links to another table; UK marks a single-field unique value. The relationship ends show exactly one, zero or one, or zero or many records. Composite unique keys and conditional rules are listed in the schema and design.
-
-[Diagram image](../images/Okpala_Ginikachukwu_301922331_ERDiagram.png)
+The diagram shows the four relational entities. PK identifies a row, FK links to another table, and UK indicates a unique value. The two account-to-transfer relationships distinguish the source account from the destination account. A completed transfer is linked to its debit and credit ledger entries using transfer_id.

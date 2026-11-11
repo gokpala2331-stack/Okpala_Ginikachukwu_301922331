@@ -26,13 +26,23 @@ MongoDB stores ledger_events as event documents with a validated common structur
 
 The portfolio proposes a three-member MongoDB replica set across separate availability zones and discusses primary elections, majority acknowledgement, secondary lag, read consistency, sharding trade-offs, private networking, TLS, access control and backup recovery. It explicitly identifies this as a proposed architecture: no live cloud deployment, failover test or sharding experiment is claimed.
 
+## Evidence files
+
+The repository includes supporting material for each activity. The current screenshots were captured before the latest review-branch corrections; rerun the relevant scripts and replace or supplement these images with fresh outputs before final submission.
+
+- Portfolio 1: [database results](portfolio-1-database-design/screenshots/Okpala_Ginikachukwu_301922331_P1_DatabaseResults.png) and [updated ER diagram](images/Okpala_Ginikachukwu_301922331_ERDiagram.svg).
+- Portfolio 2: [query results](portfolio-2-query-optimisation/screenshots/Okpala_Ginikachukwu_301922331_P2_QueryResults.png) and [index comparison](portfolio-2-query-optimisation/screenshots/Okpala_Ginikachukwu_301922331_P2_IndexComparison.png).
+- Portfolio 3: [commit/rollback](portfolio-3-transactions-concurrency/screenshots/Okpala_Ginikachukwu_301922331_P3_CommitRollback.png) and [concurrency results](portfolio-3-transactions-concurrency/screenshots/Okpala_Ginikachukwu_301922331_P3_ConcurrencyResult.png).
+- Portfolio 4: [MongoDB documents and queries](portfolio-4-nosql/screenshots/Okpala_Ginikachukwu_301922331_P4_DocumentsAndQueries.png).
+- Portfolio 5: [proposed distributed design](portfolio-5-distributed-cloud/screenshots/Okpala_Ginikachukwu_301922331_P5_ProposedDesign.png).
+
 ## Technical reflection
 
 The relational design separates customer, account, transfer and ledger details to reduce duplication and preserve referential integrity. A partial unique index enforces the primary-account rule without preventing customers from holding multiple non-primary accounts. The query experiment illustrates that indexes can reduce the work required for selective lookups, while adding storage and write costs. The two-session exercise illustrates a lost update and how row locking serialises concurrent modifications. The transfer function applies those lessons to an actual banking operation. The MongoDB event model shows the flexibility of document data while also requiring care with duplicated snapshots and consistency between systems.
 
 ## AI-use declaration
 
-AI-assisted tools were used to help review the database design, prepare and revise SQL/MongoDB examples, improve documentation and identify possible defects. The student must inspect the generated scripts, run them in PostgreSQL and MongoDB, compare actual outputs with expected behaviour, correct any errors, and be able to explain the design and test results. AI-generated examples and unverified expected outputs are not claimed as independently executed evidence.
+I used ChatGPT to review the repository against the assessment brief, identify design and implementation issues, draft corrections, and improve the SQL, MongoDB scripts and documentation. GitHub Copilot and the portfolio generator were also used during the earlier preparation stages as previously recorded. I reviewed the changes made in this repository. The new or revised review-branch scripts have not yet been executed in a live PostgreSQL or MongoDB environment; I will run them, resolve any errors, compare actual outputs with the expected results, capture fresh screenshots and update the final PDF before submission. I remain responsible for understanding and explaining every submitted design choice, script and result.
 
 ## Repository
 

@@ -15,6 +15,8 @@ This individual portfolio uses fictional records for a simulated Bank/FinTech Pl
 ## Final documentation
 
 - [Final summary (Markdown)](Okpala_Ginikachukwu_301922331_FinalSummary.md)
-- [Final summary (PDF)](Okpala_Ginikachukwu_301922331_FinalSummary.pdf)
+- [Final summary (PDF — pre-review version; regenerate after local verification)](Okpala_Ginikachukwu_301922331_FinalSummary.pdf)
 
 All example customer and transaction data are synthetic. Screenshots and recorded measurements must be retained as evidence only after they have been reproduced and verified in the student's own environment. See each portfolio README for run instructions and evidence requirements.
+
+> **Submission note:** The Markdown summary reflects the current review branch. The PDF currently in the repository is the earlier pre-review export and must be regenerated after the corrected scripts have been executed and evidence updated.

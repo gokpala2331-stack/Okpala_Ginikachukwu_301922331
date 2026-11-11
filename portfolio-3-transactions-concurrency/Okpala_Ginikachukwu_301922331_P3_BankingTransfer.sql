@@ -56,7 +56,7 @@ BEGIN
       USING ERRCODE = 'P0002';
   END IF;
 
-  IF v_source_balance < p_amount THEN
+  IF v_source_status <> 'active' THEN\n    RAISE EXCEPTION 'Source account % is not active', p_source_account_id\n      USING ERRCODE = '55000';\n  END IF;\n\n  IF v_destination_status <> 'active' THEN\n    RAISE EXCEPTION 'Destination account % is not active', p_destination_account_id\n      USING ERRCODE = '55000';\n  END IF;\n\n  IF v_source_balance < p_amount THEN
     RAISE EXCEPTION 'Insufficient funds in source account %', p_source_account_id
       USING ERRCODE = '23514';
   END IF;

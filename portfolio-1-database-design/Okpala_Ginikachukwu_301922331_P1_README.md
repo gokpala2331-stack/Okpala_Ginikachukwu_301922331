@@ -1,32 +1,37 @@
 # Portfolio 1 — Database Design and Modelling
 
-I organised the data into customer, account, ledger_entry. The design document explains the fields, keys, relationships and business rules. The normalisation document shows the sample tables at 1NF, 2NF and 3NF.
+The Bank/FinTech Platform is modelled using four related tables: customer, account, transfer and ledger_entry. The ER diagram and design document describe the entities, keys, relationships and business rules. The normalisation document explains the decomposition to 3NF.
 
 ## Database checks
 
-| Table | Rows |
-| --- | --- |
-| customer | 3 |
-| account | 2 |
-| ledger_entry | 2 |
+The schema defines primary keys, foreign keys, unique constraints, CHECK constraints and a partial unique index that permits multiple non-primary accounts while limiting each customer to one primary account.
 
-The 26 invalid inserts were rejected at their expected constraints, and the valid sample rows remained unchanged.
-
-## Files
-
-- [Design](Okpala_Ginikachukwu_301922331_P1_Design.md)
-- [ER diagram](Okpala_Ginikachukwu_301922331_P1_ERDiagram.md)
+- [Design and case study](Okpala_Ginikachukwu_301922331_P1_Design.md)
+- [ER diagram (Mermaid)](Okpala_Ginikachukwu_301922331_P1_ERDiagram.md)
 - [Normalisation](Okpala_Ginikachukwu_301922331_P1_Normalisation.md)
 - [Schema](Okpala_Ginikachukwu_301922331_P1_Schema.sql)
 - [Sample data](Okpala_Ginikachukwu_301922331_P1_SampleData.sql)
-- [Constraint tests](Okpala_Ginikachukwu_301922331_P1_ConstraintTests.sql)
-- [Table and constraint evidence](screenshots/Okpala_Ginikachukwu_301922331_P1_DatabaseResults.png)
+- [Negative constraint tests](Okpala_Ginikachukwu_301922331_P1_ConstraintTests.sql)
+- [Positive business-rule test](Okpala_Ginikachukwu_301922331_P1_BusinessRuleTests.sql)
 
-## Run the SQL
+## Run order
 
-Create a fresh PostgreSQL database. Run the schema first, then the sample data. Run the deliberately invalid statements in ConstraintTests.sql individually outside a transaction; each is expected to produce an error.
+1. Create a fresh PostgreSQL database.
+2. Run the schema script.
+3. Run the sample-data script.
+4. Run positive business-rule tests.
+5. Run negative constraint tests one statement at a time; each is expected to fail with its documented constraint.
 
-## References
+The sample-data script advances the ledger identity sequence after inserting explicit sample IDs. The expected test failures are instructions for the student to reproduce; retain the actual terminal output as evidence.
 
-- [PostgreSQL — constraints](https://www.postgresql.org/docs/17/ddl-constraints.html)
+## Main business rules
 
+- A customer may own several accounts.
+- A customer may have at most one account with is_primary = TRUE.
+- An account balance cannot be negative.
+- Ledger entries must have a positive amount and a debit or credit entry type.
+- Every ledger entry refers to an existing account.
+- Transfer amounts must be positive and source and destination accounts must differ.
+- Transfer references are unique.
+
+All data is fictional. No live financial or customer information is included.

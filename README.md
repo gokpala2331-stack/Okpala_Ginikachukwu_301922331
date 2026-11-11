@@ -1,13 +1,20 @@
-# Bank/FinTech Platform
+# Bank/FinTech Platform — Advanced Database Systems Portfolio
 
-Ginikachukwu Okpala · Student ID 301922331
+**Student:** Ginikachukwu Okpala · **Course:** MIT 8103
 
-The portfolio uses fictional records for Bank/FinTech Platform.
+This individual portfolio uses fictional records for a simulated Bank/FinTech Platform.
 
-- [Portfolio 1](portfolio-1-database-design/)
-- [Portfolio 2](portfolio-2-query-optimisation/)
-- [Portfolio 3](portfolio-3-transactions-concurrency/)
-- [Portfolio 4](portfolio-4-nosql/)
-- [Portfolio 5](portfolio-5-distributed-cloud/)
+## Portfolio activities
 
-[Final summary](Okpala_Ginikachukwu_301922331_FinalSummary.md) · [PDF](Okpala_Ginikachukwu_301922331_FinalSummary.pdf)
+- [Portfolio 1 — Database Design and Modelling](portfolio-1-database-design/Okpala_Ginikachukwu_301922331_P1_README.md)
+- [Portfolio 2 — Query Processing and Optimisation](portfolio-2-query-optimisation/Okpala_Ginikachukwu_301922331_P2_README.md)
+- [Portfolio 3 — Transactions and Concurrency](portfolio-3-transactions-concurrency/Okpala_Ginikachukwu_301922331_P3_README.md)
+- [Portfolio 4 — NoSQL and Advanced Data Models](portfolio-4-nosql/Okpala_Ginikachukwu_301922331_P4_README.md)
+- [Portfolio 5 — Distributed and Cloud Database Exercise](portfolio-5-distributed-cloud/Okpala_Ginikachukwu_301922331_P5_README.md)
+
+## Final documentation
+
+- [Final summary (Markdown)](Okpala_Ginikachukwu_301922331_FinalSummary.md)
+- [Final summary (PDF)](Okpala_Ginikachukwu_301922331_FinalSummary.pdf)
+
+All example customer and transaction data are synthetic. Screenshots and recorded measurements must be retained as evidence only after they have been reproduced and verified in the student's own environment. See each portfolio README for run instructions and evidence requirements.
